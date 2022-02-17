@@ -733,3 +733,45 @@
 2022-02-17 18:57:50,032 [INFO] ApiDb:280 - User favorites MCUs=[]
 2022-02-17 18:57:50,035 [INFO] ApiDb:276 - Save user favorites file C:\Users\balaz/.stm32cubeide/favorites.boards.txt: 0 item(s)
 2022-02-17 18:57:50,035 [INFO] ApiDb:280 - User favorites Boards=[]
+2022-02-17 19:21:50,534 [INFO] I2cTimingTraitement:325 - 0x2000090E
+2022-02-17 19:21:50,985 [WARN] IP:2107 - lpm_enable not found: check if there is a RefParameter without a condition.
+2022-02-17 19:21:50,985 [WARN] IP:2107 - lpm_enable not found: check if there is a RefParameter without a condition.
+2022-02-17 19:21:53,204 [INFO] I2cTimingTraitement:325 - 0x2000090E
+2022-02-17 19:21:53,381 [WARN] IP:2107 - lpm_enable not found: check if there is a RefParameter without a condition.
+2022-02-17 19:21:53,381 [WARN] IP:2107 - lpm_enable not found: check if there is a RefParameter without a condition.
+2022-02-17 19:21:58,015 [INFO] UtilMem:74 - End SaveConfig() Used Memory: 420238856 Bytes (1025507328)
+2022-02-17 19:22:02,797 [INFO] UtilMem:74 - End SaveConfig() Used Memory: 463756808 Bytes (1025507328)
+2022-02-17 19:22:07,551 [INFO] UtilMem:74 - End SaveConfig() Used Memory: 525622792 Bytes (1025507328)
+2022-02-17 19:22:08,112 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: SPI
+2022-02-17 19:22:08,112 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: SYS
+2022-02-17 19:22:08,112 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: RCC
+2022-02-17 19:22:08,112 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: I2C
+2022-02-17 19:22:08,113 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: NVIC
+2022-02-17 19:22:08,113 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: USB
+2022-02-17 19:22:08,113 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: GPIO
+2022-02-17 19:22:08,114 [INFO] CodeGenerator:663 - code generatio: config db path: C:\Program Files\STM32CubeIDE_1.0.2\STM32CubeIDE\plugins\com.st.stm32cube.common.mx_6.4.0.202111222105\\db\
+2022-02-17 19:22:08,173 [WARN] IP:2107 - lpm_enable not found: check if there is a RefParameter without a condition.
+2022-02-17 19:22:09,085 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\MXTmpFiles\license.tmp_save
+2022-02-17 19:22:09,188 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\MXTmpFiles\license.tmp
+2022-02-17 19:22:09,439 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\MXTmpFiles\gpio.tmp_save
+2022-02-17 19:22:09,544 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\MXTmpFiles\gpio.tmp
+2022-02-17 19:22:10,494 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Src\stm32f3xx_it.c_save
+2022-02-17 19:22:10,613 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Src\stm32f3xx_it.c
+2022-02-17 19:22:10,619 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Inc\stm32f3xx_it.h_save
+2022-02-17 19:22:10,718 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Inc\stm32f3xx_it.h
+2022-02-17 19:22:10,741 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Src\stm32f3xx_hal_msp.c_save
+2022-02-17 19:22:10,899 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Src\stm32f3xx_hal_msp.c
+2022-02-17 19:22:10,904 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\MXTmpFiles\system.tmp_save
+2022-02-17 19:22:10,985 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\MXTmpFiles\system.tmp
+2022-02-17 19:22:11,004 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Inc\stm32f3xx_hal_conf.h_save
+2022-02-17 19:22:11,116 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Inc\stm32f3xx_hal_conf.h
+2022-02-17 19:22:11,184 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Inc\main.h_save
+2022-02-17 19:22:11,283 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Inc\main.h
+2022-02-17 19:22:11,296 [INFO] CodeEngine:239 - oldGeneratedFile, C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Src\main.c_save
+2022-02-17 19:22:11,485 [INFO] CodeEngine:257 - Generated code: C:\_Cloud\GitHub\BalancingRobot\BalancingRobot\Core\Src\main.c
+2022-02-17 19:22:12,872 [INFO] ProjectBuilder:2589 - Time for Copy HAL[1] : 402mS.
+2022-02-17 19:22:12,990 [INFO] ProjectBuilder:3665 - Project Generator version: 3.15.2
+2022-02-17 19:22:13,594 [INFO] ConfigFileManager:1273 - The Die is : DIE422
+2022-02-17 19:22:16,900 [INFO] ProjectBuilder:3832 - Time for Generating toolchain IDE Files: 3910mS.
+2022-02-17 19:22:16,901 [INFO] ProjectBuilder:2461 - Time for Copy CMSIS : 0mS.
+2022-02-17 19:22:16,907 [INFO] ProjectBuilder:2461 - Time for Copy CMSIS : 1mS.
