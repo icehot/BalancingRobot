@@ -53,3 +53,5 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+BalancingRobot/Debug/BalancingRobot.bin
+BalancingRobot/Debug/BalancingRobot.list
