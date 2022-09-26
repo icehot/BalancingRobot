@@ -1,7 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
+	<item key="LastUsedHeaderTemplate" value="Default C header template"/>
+	<item key="LastUsedSourceTemplate" value="Default C source template"/>
 	<section name="completion_proposal_size">
 	</section>
 	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration">
+	</section>
+	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration.internal">
+		<item key="size.width" value="472"/>
+		<item key="size.height" value="180"/>
+	</section>
+	<section name="PDOMSearchPage">
+		<item key="caseSensitive" value="false"/>
+		<item key="searchFlags" value="39"/>
+		<list key="previousPatterns">
+			<item value="__HAL_TIM_SET_COMPARE"/>
+			<item value="HAL_TIM_PWM_Start"/>
+			<item value="_write"/>
+			<item value="HAL_TIMEx_RemapConfig"/>
+			<item value="IS_TIM_UIFREMAP_MODE"/>
+			<item value="TIM_CR1_UIFREMAP"/>
+			<item value="TIM_UIFREMAP_DISABLE"/>
+			<item value="TIM_UIFREMAP_ENABLE"/>
+			<item value="SPIx_Init"/>
+			<item value="SPIx_MspInit"/>
+			<item value="COMPASSACCELERO_IO_Init"/>
+			<item value="I2Cx_Init"/>
+			<item value="I2cHandle"/>
+			<item value="USE_HAL_I2C_REGISTER_CALLBACKS"/>
+			<item value="HAL_I2C_MspInit"/>
+			<item value="I2C1_SCL_Pin"/>
+			<item value="SystemCoreClockUpdate"/>
+		</list>
+	</section>
+	<section name="OptionalMessageDialog.hide.">
+		<item key="askReindex.detail" value="0"/>
+		<item key="askReindex" value="true"/>
+	</section>
+	<section name="org.eclipse.cdt.ui.OPEN_ACTION_SELECTION_DIALOG_SECTION">
+		<item key="DIALOG_X_ORIGIN" value="1089"/>
+		<item key="DIALOG_Y_ORIGIN" value="416"/>
+		<item key="DIALOG_WIDTH" value="398"/>
+		<item key="DIALOG_HEIGHT" value="438"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+	</section>
+	<section name="RenameInformationPopup">
+	</section>
+	<section name="CRenameRefactoringInputPage">
+	</section>
+	<section name="CResourceRenameRefactoringInputPage">
+		<item key="updateReferences" value="true"/>
 	</section>
 </section>

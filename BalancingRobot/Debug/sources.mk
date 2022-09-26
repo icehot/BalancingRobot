@@ -20,7 +20,20 @@ OBJCOPY_BIN :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+Core/Encoder \
+Core/FilterFIR \
+Core/L298h \
+Core/PID \
 Core/Src \
 Core/Startup \
+Drivers/Components/i3g4250d \
+Drivers/Components/l3gd20 \
+Drivers/Components/lsm303agr \
+Drivers/Components/lsm303dlhc \
+Drivers/STM32F3-Discovery \
 Drivers/STM32F3xx_HAL_Driver/Src \
+Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
+Middlewares/Third_Party/FreeRTOS/Source \
+Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang \
 

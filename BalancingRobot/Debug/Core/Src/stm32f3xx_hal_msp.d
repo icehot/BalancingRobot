@@ -29,7 +29,20 @@ Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr_ex.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi.h \
- ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi_ex.h
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi_ex.h \
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h \
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h \
+ C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery_accelerometer.h \
+ C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\lsm303dlhc\lsm303dlhc.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\accelero.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\lsm303agr\lsm303agr.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\accelero.h \
+ C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery_gyroscope.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\l3gd20\l3gd20.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\gyro.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\i3g4250d\i3g4250d.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\gyro.h
 
 ../Core/Inc/main.h:
 
@@ -94,3 +107,29 @@ Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c \
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi.h:
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi_ex.h:
+
+../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h:
+
+../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h:
+
+C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery_accelerometer.h:
+
+C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\lsm303dlhc\lsm303dlhc.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\accelero.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\lsm303agr\lsm303agr.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\accelero.h:
+
+C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery_gyroscope.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\l3gd20\l3gd20.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\gyro.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\i3g4250d\i3g4250d.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\gyro.h:

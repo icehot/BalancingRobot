@@ -29,7 +29,32 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr_ex.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi.h \
- ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi_ex.h
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi_ex.h \
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h \
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h \
+ C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery_accelerometer.h \
+ C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\lsm303dlhc\lsm303dlhc.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\accelero.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\lsm303agr\lsm303agr.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\accelero.h \
+ C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery_gyroscope.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\l3gd20\l3gd20.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\gyro.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\i3g4250d\i3g4250d.h \
+ c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\gyro.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
+ ../Core/Inc/FreeRTOSConfig.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
+ ../Core/Inc/selftest.h ../Core/Src/../Encoder/Encoder.h \
+ ../Core/Src/../L298h/L298.h ../Core/Src/../PID/PID.h \
+ ../Core/Src/../PID/PID_Cfg.h ../Core/Src/../PID/PID.h
 
 ../Core/Inc/main.h:
 
@@ -94,3 +119,59 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi.h:
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi_ex.h:
+
+../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h:
+
+../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h:
+
+C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery_accelerometer.h:
+
+C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\lsm303dlhc\lsm303dlhc.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\accelero.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\lsm303agr\lsm303agr.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\accelero.h:
+
+C:/_Cloud/GitHub/BalancingRobot/BalancingRobot/Drivers/STM32F3-Discovery/stm32f3_discovery_gyroscope.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\l3gd20\l3gd20.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\gyro.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\i3g4250d\i3g4250d.h:
+
+c:\_cloud\github\balancingrobot\balancingrobot\drivers\components\common\gyro.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
+
+../Core/Inc/FreeRTOSConfig.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h:
+
+../Core/Inc/selftest.h:
+
+../Core/Src/../Encoder/Encoder.h:
+
+../Core/Src/../L298h/L298.h:
+
+../Core/Src/../PID/PID.h:
+
+../Core/Src/../PID/PID_Cfg.h:
+
+../Core/Src/../PID/PID.h:

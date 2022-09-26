@@ -31,7 +31,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32f3_discovery_accelerometer.h"
+#include "stm32f3_discovery_gyroscope.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -41,13 +42,18 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+extern I2C_HandleTypeDef hi2c1;
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim8;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 
 /* USER CODE END EM */
+
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
@@ -73,8 +79,14 @@ void Error_Handler(void);
 #define OSC_IN_GPIO_Port GPIOF
 #define OSC_OUT_Pin GPIO_PIN_1
 #define OSC_OUT_GPIO_Port GPIOF
+#define MOT_1_IN1_Pin GPIO_PIN_0
+#define MOT_1_IN1_GPIO_Port GPIOC
+#define MOT_1_IN2_Pin GPIO_PIN_1
+#define MOT_1_IN2_GPIO_Port GPIOC
 #define B1_Pin GPIO_PIN_0
 #define B1_GPIO_Port GPIOA
+#define PWM_MOT_2_Pin GPIO_PIN_1
+#define PWM_MOT_2_GPIO_Port GPIOA
 #define SPI1_SCK_Pin GPIO_PIN_5
 #define SPI1_SCK_GPIO_Port GPIOA
 #define SPI1_MISO_Pin GPIO_PIN_6
@@ -97,6 +109,14 @@ void Error_Handler(void);
 #define LD8_GPIO_Port GPIOE
 #define LD6_Pin GPIO_PIN_15
 #define LD6_GPIO_Port GPIOE
+#define Encoder_2_A_Pin GPIO_PIN_6
+#define Encoder_2_A_GPIO_Port GPIOC
+#define Encoder_2_B_Pin GPIO_PIN_7
+#define Encoder_2_B_GPIO_Port GPIOC
+#define Encoder_1_A_Pin GPIO_PIN_8
+#define Encoder_1_A_GPIO_Port GPIOA
+#define Encoder_1_B_Pin GPIO_PIN_9
+#define Encoder_1_B_GPIO_Port GPIOA
 #define DM_Pin GPIO_PIN_11
 #define DM_GPIO_Port GPIOA
 #define DP_Pin GPIO_PIN_12
@@ -105,6 +125,12 @@ void Error_Handler(void);
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
+#define PWM_MOT_1_Pin GPIO_PIN_15
+#define PWM_MOT_1_GPIO_Port GPIOA
+#define MOT_2_IN3_Pin GPIO_PIN_10
+#define MOT_2_IN3_GPIO_Port GPIOC
+#define MOT_2_IN4_Pin GPIO_PIN_11
+#define MOT_2_IN4_GPIO_Port GPIOC
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
 #define I2C1_SCL_Pin GPIO_PIN_6

@@ -18,10 +18,18 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include "selftest.h"
+
+#include "../Encoder/Encoder.h"
+#include "../L298h/L298.h"
+#include "../PID/PID.h"
+#include "../PID/PID_Cfg.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,10 +51,51 @@ I2C_HandleTypeDef hi2c1;
 
 SPI_HandleTypeDef hspi1;
 
+TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim8;
+
 PCD_HandleTypeDef hpcd_USB_FS;
 
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Task_1000ms */
+osThreadId_t Task_1000msHandle;
+const osThreadAttr_t Task_1000ms_attributes = {
+  .name = "Task_1000ms",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityHigh,
+};
+/* Definitions for Task_100ms */
+osThreadId_t Task_100msHandle;
+const osThreadAttr_t Task_100ms_attributes = {
+  .name = "Task_100ms",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for Task_50ms */
+osThreadId_t Task_50msHandle;
+const osThreadAttr_t Task_50ms_attributes = {
+  .name = "Task_50ms",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for Timer1000ms */
+osTimerId_t Timer1000msHandle;
+const osTimerAttr_t Timer1000ms_attributes = {
+  .name = "Timer1000ms"
+};
+/* Definitions for Timer100ms */
+osTimerId_t Timer100msHandle;
+const osTimerAttr_t Timer100ms_attributes = {
+  .name = "Timer100ms"
+};
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,6 +104,16 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USB_PCD_Init(void);
+static void MX_TIM1_Init(void);
+static void MX_TIM2_Init(void);
+static void MX_TIM8_Init(void);
+void StartDefaultTask(void *argument);
+void Task_1000msFunc(void *argument);
+void Task_100msFunc(void *argument);
+void Task_50msFunc(void *argument);
+void Timer1000msCallback(void *argument);
+void Timer100msCallback(void *argument);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -72,6 +131,7 @@ int _write(int file, char *ptr, int len)
 
 	return len;
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -105,19 +165,77 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI1_Init();
   MX_USB_PCD_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
+  MX_TIM8_Init();
   /* USER CODE BEGIN 2 */
+  Encoder_Init();
+  L298_Init();
+
+  /* Get the set period from motor control pwm timer to define PID output limits */
+  pid.limMax = (float)L298_GetPeriod();
+
+  PIDController_Init(&pid);
+
+  BSP_ACCELERO_Init();
+  BSP_GYRO_Init();
   printf(" STM32F3 Demo!\n");
-  //HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LD7_GPIO_Port, LD7_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LD8_GPIO_Port, LD8_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LD9_GPIO_Port, LD9_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LD10_GPIO_Port, LD10_Pin, GPIO_PIN_SET);
+
+  printf("\nPWM Max limit: %d !\n",(int)pid.limMax);
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* Create the timer(s) */
+  /* creation of Timer1000ms */
+  Timer1000msHandle = osTimerNew(Timer1000msCallback, osTimerPeriodic, NULL, &Timer1000ms_attributes);
+
+  /* creation of Timer100ms */
+  Timer100msHandle = osTimerNew(Timer100msCallback, osTimerPeriodic, NULL, &Timer100ms_attributes);
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of Task_1000ms */
+  Task_1000msHandle = osThreadNew(Task_1000msFunc, NULL, &Task_1000ms_attributes);
+
+  /* creation of Task_100ms */
+  Task_100msHandle = osThreadNew(Task_100msFunc, NULL, &Task_100ms_attributes);
+
+  /* creation of Task_50ms */
+  Task_50msHandle = osThreadNew(Task_50msFunc, NULL, &Task_50ms_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -125,6 +243,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  /*
 	  if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin))
 	  {
 		  HAL_GPIO_TogglePin(LD4_GPIO_Port,LD4_Pin);
@@ -134,6 +253,9 @@ int main(void)
 	  }
 
 	  HAL_Delay(100);
+	  */
+	  //ACCELERO_MEMS_Test();
+	  GYRO_MEMS_Test();
   }
   /* USER CODE END 3 */
 }
@@ -176,9 +298,12 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB|RCC_PERIPHCLK_I2C1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB|RCC_PERIPHCLK_I2C1
+                              |RCC_PERIPHCLK_TIM1|RCC_PERIPHCLK_TIM8;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
   PeriphClkInit.USBClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
+  PeriphClkInit.Tim1ClockSelection = RCC_TIM1CLK_HCLK;
+  PeriphClkInit.Tim8ClockSelection = RCC_TIM8CLK_HCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -202,7 +327,7 @@ static void MX_I2C1_Init(void)
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x2000090E;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 100;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -240,7 +365,6 @@ static void MX_SPI1_Init(void)
 {
 
   /* USER CODE BEGIN SPI1_Init 0 */
-
   /* USER CODE END SPI1_Init 0 */
 
   /* USER CODE BEGIN SPI1_Init 1 */
@@ -250,11 +374,11 @@ static void MX_SPI1_Init(void)
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -268,6 +392,163 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_Encoder_InitTypeDef sConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 0;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 0xffff;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC1Filter = 0;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC2Filter = 0;
+  if (HAL_TIM_Encoder_Init(&htim1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+  __HAL_TIM_UIFREMAP_ENABLE(&htim1);
+  __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_UPDATE);
+  /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 0;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 3600;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+  HAL_TIM_MspPostInit(&htim2);
+
+}
+
+/**
+  * @brief TIM8 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM8_Init(void)
+{
+
+  /* USER CODE BEGIN TIM8_Init 0 */
+
+  /* USER CODE END TIM8_Init 0 */
+
+  TIM_Encoder_InitTypeDef sConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM8_Init 1 */
+
+  /* USER CODE END TIM8_Init 1 */
+  htim8.Instance = TIM8;
+  htim8.Init.Prescaler = 0;
+  htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim8.Init.Period = 0xffff;
+  htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim8.Init.RepetitionCounter = 0;
+  htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC1Filter = 0;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC2Filter = 0;
+  if (HAL_TIM_Encoder_Init(&htim8, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM8_Init 2 */
+  __HAL_TIM_UIFREMAP_ENABLE(&htim8);
+  __HAL_TIM_CLEAR_IT(&htim8, TIM_IT_UPDATE);
+  /* USER CODE END TIM8_Init 2 */
 
 }
 
@@ -323,6 +604,9 @@ static void MX_GPIO_Init(void)
                           |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin
                           |LD6_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, MOT_1_IN1_Pin|MOT_1_IN2_Pin|MOT_2_IN3_Pin|MOT_2_IN4_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pins : DRDY_Pin MEMS_INT3_Pin MEMS_INT4_Pin MEMS_INT1_Pin
                            MEMS_INT2_Pin */
   GPIO_InitStruct.Pin = DRDY_Pin|MEMS_INT3_Pin|MEMS_INT4_Pin|MEMS_INT1_Pin
@@ -342,6 +626,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : MOT_1_IN1_Pin MOT_1_IN2_Pin MOT_2_IN3_Pin MOT_2_IN4_Pin */
+  GPIO_InitStruct.Pin = MOT_1_IN1_Pin|MOT_1_IN2_Pin|MOT_2_IN3_Pin|MOT_2_IN4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -353,6 +644,158 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
+{
+  /* USER CODE BEGIN 5 */
+	osTimerStart(Timer1000msHandle,1000);
+	osTimerStart(Timer100msHandle,100);
+  /* Infinite loop */
+  for(;;)
+  {
+	  osDelay(1000);
+  }
+  /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_Task_1000msFunc */
+/**
+* @brief Function implementing the Task_1000ms thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Task_1000msFunc */
+void Task_1000msFunc(void *argument)
+{
+  /* USER CODE BEGIN Task_1000msFunc */
+  /* Infinite loop */
+  uint32_t tick;
+
+  tick = osKernelGetTickCount();        // retrieve the number of system ticks
+  for (;;)
+  {
+	  tick += 500U; // delay 1000 ticks periodically
+	  BSP_LED_Toggle(LED3);
+
+	  printf("\nPos1: %ld\nPos2: %ld\n",(long int)Encoder_GetPosition(ENCODER_RIGHT), (long int)Encoder_GetPosition(ENCODER_LEFT));
+	  printf("\nSpd1: %d\nSpd2: %d\n",(int)Encoder_GetSpeed(ENCODER_RIGHT),(int)Encoder_GetSpeed(ENCODER_LEFT));
+	  osDelayUntil(tick);
+  }
+  /* USER CODE END Task_1000msFunc */
+}
+
+/* USER CODE BEGIN Header_Task_100msFunc */
+/**
+* @brief Function implementing the Task_100ms thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Task_100msFunc */
+void Task_100msFunc(void *argument)
+{
+  /* USER CODE BEGIN Task_100msFunc */
+	  uint32_t tick;
+	  //uint32_t pwm = 0;
+	  //int sign = 1;
+
+	  tick = osKernelGetTickCount();        // retrieve the number of system ticks
+	  for (;;)
+	  {
+		  tick += 100U; // delay 100 ticks periodically
+		  BSP_LED_Toggle(LED7);
+
+		  /* PWM Sweep */
+		  /*
+		  pwm = (pwm + sign*25);
+
+		  if (pwm == 3600 || pwm == 0)
+		  {
+			  sign = - sign;
+		  }
+
+		  L298_SetDutyInTick( L298_MOTOR_RIGHT, pwm);
+		  L298_SetDutyInTick( L298_MOTOR_LEFT, 3600-pwm);
+          */
+
+		  osDelayUntil(tick);
+	  }
+  /* USER CODE END Task_100msFunc */
+}
+
+/* USER CODE BEGIN Header_Task_50msFunc */
+/**
+* @brief Function implementing the Task_50ms thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Task_50msFunc */
+void Task_50msFunc(void *argument)
+{
+  /* USER CODE BEGIN Task_50msFunc */
+	uint32_t tick;
+  /* Infinite loop */
+  for(;;)
+  {
+    tick = osKernelGetTickCount();        // retrieve the number of system ticks
+    tick += 50;
+
+    Encoder_Cyclic();
+
+    float Speed_Measured = Encoder_GetSpeed(ENCODER_RIGHT);
+    float Speed_SetPoint = 50;
+    uint32_t PID_output = (uint32_t) PIDController_Update(&pid, Speed_SetPoint, Speed_Measured);
+
+    L298_SetDutyInTick( L298_MOTOR_RIGHT, PID_output);
+
+
+    osDelayUntil(tick);
+  }
+  /* USER CODE END Task_50msFunc */
+}
+
+/* Timer1000msCallback function */
+void Timer1000msCallback(void *argument)
+{
+  /* USER CODE BEGIN Timer1000msCallback */
+	//BSP_LED_Toggle(LED10);
+  /* USER CODE END Timer1000msCallback */
+}
+
+/* Timer100msCallback function */
+void Timer100msCallback(void *argument)
+{
+  /* USER CODE BEGIN Timer100msCallback */
+	//BSP_LED_Toggle(LED6);
+  /* USER CODE END Timer100msCallback */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM7 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM7) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
