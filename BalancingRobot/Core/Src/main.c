@@ -96,6 +96,8 @@ const osTimerAttr_t Timer100ms_attributes = {
   .name = "Timer100ms"
 };
 /* USER CODE BEGIN PV */
+int32_t PID_output_R = 0;
+int32_t PID_output_L = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -150,7 +152,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  /* Delay 1s to avoid motor start glitch in debug mode */
+  HAL_Delay(1000);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -173,16 +176,18 @@ int main(void)
   L298_Init();
 
   /* Get the set period from motor control pwm timer to define PID output limits */
-  pid.limMax = (float)L298_GetPeriod();
+  PID_Speed_L.limMax = (float)L298_GetPeriod();
+  PID_Speed_R.limMax = (float)L298_GetPeriod();
 
-  PIDController_Init(&pid);
+  PIDController_Init(&PID_Speed_L);
+  PIDController_Init(&PID_Speed_R);
 
   BSP_ACCELERO_Init();
   BSP_GYRO_Init();
   printf(" STM32F3 Demo!\n");
 
-  printf("\nPWM Max limit: %d !\n",(int)pid.limMax);
-
+  printf("\nPWM Max limit L: %d !\n",(int)PID_Speed_L.limMax);
+  printf("PWM Max limit R: %d !\n",(int)PID_Speed_R.limMax);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -605,7 +610,7 @@ static void MX_GPIO_Init(void)
                           |LD6_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, MOT_1_IN1_Pin|MOT_1_IN2_Pin|MOT_2_IN3_Pin|MOT_2_IN4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, MOT_L_IN1_Pin|MOT_L_IN2_Pin|MOT_R_IN3_Pin|MOT_R_IN4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : DRDY_Pin MEMS_INT3_Pin MEMS_INT4_Pin MEMS_INT1_Pin
                            MEMS_INT2_Pin */
@@ -626,8 +631,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : MOT_1_IN1_Pin MOT_1_IN2_Pin MOT_2_IN3_Pin MOT_2_IN4_Pin */
-  GPIO_InitStruct.Pin = MOT_1_IN1_Pin|MOT_1_IN2_Pin|MOT_2_IN3_Pin|MOT_2_IN4_Pin;
+  /*Configure GPIO pins : MOT_L_IN1_Pin MOT_L_IN2_Pin MOT_R_IN3_Pin MOT_R_IN4_Pin */
+  GPIO_InitStruct.Pin = MOT_L_IN1_Pin|MOT_L_IN2_Pin|MOT_R_IN3_Pin|MOT_R_IN4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -684,8 +689,9 @@ void Task_1000msFunc(void *argument)
 	  tick += 500U; // delay 1000 ticks periodically
 	  BSP_LED_Toggle(LED3);
 
-	  printf("\nPos1: %ld\nPos2: %ld\n",(long int)Encoder_GetPosition(ENCODER_RIGHT), (long int)Encoder_GetPosition(ENCODER_LEFT));
-	  printf("\nSpd1: %d\nSpd2: %d\n",(int)Encoder_GetSpeed(ENCODER_RIGHT),(int)Encoder_GetSpeed(ENCODER_LEFT));
+	  printf("\nPosR: %ld SpdR: %d\nPosL: %ld SpdL: %d\n",(long int)Encoder_GetPosition(ENCODER_RIGHT),(int)Encoder_GetSpeed(ENCODER_RIGHT), (long int)Encoder_GetPosition(ENCODER_LEFT),(int)Encoder_GetSpeed(ENCODER_LEFT));
+	  printf("PID R: %ld\n", PID_output_R);
+	  printf("PID L: %ld\n", PID_output_L);
 	  osDelayUntil(tick);
   }
   /* USER CODE END Task_1000msFunc */
@@ -735,6 +741,8 @@ void Task_100msFunc(void *argument)
 * @param argument: Not used
 * @retval None
 */
+float Speed_Measured_L = 0;
+float Speed_Measured_R = 0;
 /* USER CODE END Header_Task_50msFunc */
 void Task_50msFunc(void *argument)
 {
@@ -744,15 +752,18 @@ void Task_50msFunc(void *argument)
   for(;;)
   {
     tick = osKernelGetTickCount();        // retrieve the number of system ticks
-    tick += 50;
+    tick += 10;
 
     Encoder_Cyclic();
+    Speed_Measured_L = Encoder_GetSpeed(ENCODER_LEFT);
+    Speed_Measured_R = Encoder_GetSpeed(ENCODER_RIGHT);
 
-    float Speed_Measured = Encoder_GetSpeed(ENCODER_RIGHT);
     float Speed_SetPoint = 50;
-    uint32_t PID_output = (uint32_t) PIDController_Update(&pid, Speed_SetPoint, Speed_Measured);
+    PID_output_L = (int32_t)PIDController_Update(&PID_Speed_L, Speed_SetPoint, Speed_Measured_L);
+    PID_output_R = (int32_t)PIDController_Update(&PID_Speed_R, Speed_SetPoint, Speed_Measured_R);
 
-    L298_SetDutyInTick( L298_MOTOR_RIGHT, PID_output);
+    L298_SetDutyInTick( L298_MOTOR_LEFT, PID_output_L);
+    L298_SetDutyInTick( L298_MOTOR_RIGHT, PID_output_R);
 
 
     osDelayUntil(tick);

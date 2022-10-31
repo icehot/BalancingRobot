@@ -3,13 +3,13 @@
 void PIDController_Init(PIDController *pid) {
 
 	/* Clear controller variables */
-	pid->integrator = 0.0f;
-	pid->prevError  = 0.0f;
+	pid->integrator = 0.0;
+	pid->prevError  = 0.0;
 
-	pid->differentiator  = 0.0f;
-	pid->prevMeasurement = 0.0f;
+	pid->differentiator  = 0.0;
+	pid->prevMeasurement = 0.0;
 
-	pid->out = 0.0f;
+	pid->out = 0.0;
 
 }
 
@@ -32,7 +32,27 @@ float PIDController_Update(PIDController *pid, float setpoint, float measurement
 	*/
     pid->integrator = pid->integrator + 0.5f * pid->Ki * pid->T * (error + pid->prevError);
 
-	/* Anti-wind-up via integrator clamping */
+
+    /* Anti-wind-up via integrator clamping */
+    if (pid->limMax > proportional)
+    {
+    	pid->limMaxInt = pid->limMax - proportional;
+    }
+    else
+    {
+    	pid->limMaxInt = 0;
+    }
+
+    if (pid->limMin < proportional)
+    {
+    	pid->limMinInt = pid->limMin - proportional;
+    }
+    else
+    {
+    	pid->limMinInt = 0;
+    }
+
+
     if (pid->integrator > pid->limMaxInt) {
 
         pid->integrator = pid->limMaxInt;

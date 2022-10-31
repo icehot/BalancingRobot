@@ -84,24 +84,25 @@ void Encoder_Cyclic(void)
 
 		Encoder[i].position = (int64_t)Encoder[i].counter + (int64_t)Encoder[i].overflow*(int64_t)PERIOD;
 
-		/*Output RPM = ((Pulses Recieved in 1 sec * 60) / PPR) / Gear Ratio*/
-		Encoder[i].speed = (((float)(Encoder[i].position - Encoder[i].prev_position) * (1000/(float)(OsTickCount - OsTickCount_Prev)) * 60)/(float)RESOLUTION)/(float)GEAR_RATIO;
-
 		if (OsTickCount > OsTickCount_Prev)
 		{
-			if (i == ENCODER_RIGHT)
-			{
-				Encoder[i].speed = FIRFilter_Update(&FiltEncRight, (((float)(Encoder[i].position - Encoder[i].prev_position) * (1000/(float)(OsTickCount - OsTickCount_Prev)) * 60)/(float)RESOLUTION)/(float)GEAR_RATIO);
+			/*Output RPM = ((Pulses Recieved in 1 sec * 60) / PPR) / Gear Ratio*/
+			Encoder[i].speed = (((float)(Encoder[i].position - Encoder[i].prev_position) * (1000/(float)(OsTickCount - OsTickCount_Prev)) * 60)/(float)RESOLUTION)/(float)GEAR_RATIO;
 
-			}
-			else if (i == ENCODER_LEFT)
-			{
-				Encoder[i].speed = FIRFilter_Update(&FiltEncLeft, (((float)(Encoder[i].position - Encoder[i].prev_position) * (1000/(float)(OsTickCount - OsTickCount_Prev)) * 60)/(float)RESOLUTION)/(float)GEAR_RATIO);
-			}
-			else
-			{
-				/* Invalid encoder instance, should never get here */
-			}
+//			if (i == ENCODER_RIGHT)
+//			{
+//				Encoder[i].speed = FIRFilter_Update(&FiltEncRight, (((float)(Encoder[i].position - Encoder[i].prev_position) * (1000/(float)(OsTickCount - OsTickCount_Prev)) * 60)/(float)RESOLUTION)/(float)GEAR_RATIO);
+//
+//			}
+//			else if (i == ENCODER_LEFT)
+//			{
+//				Encoder[i].speed = FIRFilter_Update(&FiltEncLeft, (((float)(Encoder[i].position - Encoder[i].prev_position) * (1000/(float)(OsTickCount - OsTickCount_Prev)) * 60)/(float)RESOLUTION)/(float)GEAR_RATIO);
+//			}
+//			else
+//			{
+//				/* Invalid encoder instance, should never get here */
+//			}
+
 		}
 		else
 		{

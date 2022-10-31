@@ -15,16 +15,18 @@ PWM_Config_T PWM_Config = {
 		0  /* Duty Left */
 };
 
+static void L298_SetDir(L298_Motor_Instance channel, L298_Motor_Direction dir);
+
 /* Init L298 */
 void L298_Init(void)
 {
 	uint32_t PCLK1Freq;
 
-	/* Configure In1 In2 pins */
-	HAL_GPIO_WritePin(MOT_1_IN1_GPIO_Port, MOT_1_IN1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(MOT_1_IN2_GPIO_Port, MOT_1_IN2_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(MOT_2_IN3_GPIO_Port, MOT_2_IN3_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(MOT_2_IN4_GPIO_Port, MOT_2_IN4_Pin, GPIO_PIN_SET);
+	/* Configure In1 In2 pins - Forward direction for both motors */
+	HAL_GPIO_WritePin(MOT_L_IN1_GPIO_Port, MOT_L_IN1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(MOT_L_IN2_GPIO_Port, MOT_L_IN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MOT_R_IN3_GPIO_Port, MOT_R_IN3_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MOT_R_IN4_GPIO_Port, MOT_R_IN4_Pin, GPIO_PIN_SET);
 
 	/* Calculate Timer period based on Timer Frequency */
 	PCLK1Freq = HAL_RCC_GetPCLK1Freq();
@@ -51,17 +53,34 @@ void L298_PWM_Config(uint32_t channel, uint32_t period, uint32_t pulse)
 	HAL_TIM_PWM_Start(PWM_Config.timer, channel); // start pwm generation
 }
 
-
-/* Set Duty in Percentage [0 ... 1] */
+/* Set Duty in Percentage [-1 ... 0 ... 1] */
 void L298_SetDutyInPerc( L298_Motor_Instance channel, float duty)
 {
-	__HAL_TIM_SET_COMPARE(PWM_Config.timer, channel, (uint32_t)((float)L298_GetPeriod() * duty));
+	if (duty >=  0)
+	{/* Forward*/
+		L298_SetDir(channel, L298_FORWARD);
+		__HAL_TIM_SET_COMPARE(PWM_Config.timer, channel, (uint32_t)((float)L298_GetPeriod() * duty));
+	}
+	else
+	{/* Backward */
+		L298_SetDir(channel, L298_BACKWARD);
+		__HAL_TIM_SET_COMPARE(PWM_Config.timer, channel, (uint32_t)((float)L298_GetPeriod() * (-duty)));
+	}
 }
 
-/* Set Duty in Ticks [0 ... Period], use L298_GetPeriod() to retrieve max value */
-void L298_SetDutyInTick( L298_Motor_Instance channel, uint32_t duty)
+/* Set Duty in Ticks [-Period ... 0 ... Period], use L298_GetPeriod() to retrieve max value */
+void L298_SetDutyInTick( L298_Motor_Instance channel, int32_t duty)
 {
-	__HAL_TIM_SET_COMPARE(PWM_Config.timer, channel, duty);
+	if (duty >=  0)
+	{/* Forward*/
+		L298_SetDir(channel, L298_FORWARD);
+		__HAL_TIM_SET_COMPARE(PWM_Config.timer, channel, (uint32_t)duty);
+	}
+	else
+	{/* Backward */
+		L298_SetDir(channel, L298_BACKWARD);
+		__HAL_TIM_SET_COMPARE(PWM_Config.timer, channel, (uint32_t)(-duty));
+	}
 }
 
 /* Return period in ticks, for maximal resolution, use after Init only */
@@ -70,3 +89,33 @@ uint32_t L298_GetPeriod()
 	return PWM_Config.period;
 }
 
+/* Set direction [Forward, Backward] */
+static void L298_SetDir(L298_Motor_Instance channel, L298_Motor_Direction dir)
+{
+	if(channel == L298_MOTOR_LEFT)
+	{
+		if (dir == L298_FORWARD)
+		{
+			HAL_GPIO_WritePin(MOT_L_IN1_GPIO_Port, MOT_L_IN1_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(MOT_L_IN2_GPIO_Port, MOT_L_IN2_Pin, GPIO_PIN_RESET);
+		}
+		else
+		{/* dir == L298_BACKWARD */
+			HAL_GPIO_WritePin(MOT_L_IN1_GPIO_Port, MOT_L_IN1_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(MOT_L_IN2_GPIO_Port, MOT_L_IN2_Pin, GPIO_PIN_SET);
+		}
+	}
+	else
+	{/* channel == L298_MOTOR_RIGHT */
+		if (dir == L298_FORWARD)
+		{
+			HAL_GPIO_WritePin(MOT_R_IN3_GPIO_Port, MOT_R_IN3_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(MOT_R_IN4_GPIO_Port, MOT_R_IN4_Pin, GPIO_PIN_SET);
+		}
+		else
+		{/* dir == L298_BACKWARD */
+			HAL_GPIO_WritePin(MOT_R_IN3_GPIO_Port, MOT_R_IN3_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(MOT_R_IN4_GPIO_Port, MOT_R_IN4_Pin, GPIO_PIN_RESET);
+		}
+	}
+}

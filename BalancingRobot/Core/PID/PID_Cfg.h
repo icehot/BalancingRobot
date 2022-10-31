@@ -10,6 +10,7 @@
 
 #include "PID.h"
 
-extern PIDController pid;
+extern PIDController PID_Speed_L;
+extern PIDController PID_Speed_R;
 
 #endif /* PID_PID_CFG_H_ */

@@ -13,8 +13,13 @@
 
 typedef enum{
 	L298_MOTOR_RIGHT = TIM_CHANNEL_1,
-	L298_MOTOR_LEFT  = TIM_CHANNEL_2,
+	L298_MOTOR_LEFT  = TIM_CHANNEL_2
 }L298_Motor_Instance;
+
+typedef enum{
+	L298_FORWARD,
+	L298_BACKWARD
+}L298_Motor_Direction;
 
 typedef struct
 {
@@ -28,7 +33,7 @@ typedef struct
 void L298_Init(void);
 void L298_PWM_Config(uint32_t channel, uint32_t period, uint32_t pulse);
 void L298_SetDutyInPerc( L298_Motor_Instance channel, float duty);
-void L298_SetDutyInTick( L298_Motor_Instance channel, uint32_t duty);
+void L298_SetDutyInTick( L298_Motor_Instance channel, int32_t duty);
 uint32_t L298_GetPeriod();
 
 #endif /* INC_L298_H_ */
